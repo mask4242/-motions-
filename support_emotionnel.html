@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Programme de soutien pour LA GOAT</title>
+<style>
+:root{--bg:#f6f6f9;--text:#16161a;--card:#ffffff;--accent:#6a00b3;--danger:#b00020;--radius:16px;--radius-sm:12px;--shadow:0 8px 24px rgba(0,0,0,.08);--spacing:clamp(16px,2.5vw,24px);--btn-bg:var(--card);--btn-fg:var(--text)}
+body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;background:var(--bg);color:var(--text);line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:var(--spacing)}
+h1{font-size:clamp(24px,5.2vw,34px);margin:0 0 16px;text-align:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.grid .btn{opacity:0;animation:popIn .25s ease forwards;animation-delay:calc(var(--i)*.04s)}
+.btn{appearance:none;border:none;border-radius:var(--radius-sm);padding:16px 18px;font-size:16px;background:var(--btn-bg);color:var(--btn-fg);box-shadow:var(--shadow);transition:transform .12s ease,box-shadow .2s ease;position:relative}
+.btn:hover{box-shadow:0 12px 28px rgba(0,0,0,.09)}
+.btn:active{transform:scale(.99)}
+.btn:focus-visible{outline:0;box-shadow:0 0 0 3px rgba(106,0,179,.2),var(--shadow)}
+.danger{background:#fee;color:var(--danger)}
+.out{margin-top:20px;background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.title{font-weight:600;color:var(--danger);margin-bottom:8px}
+#msg{font-size:clamp(18px,3.8vw,20px)}
+.cute{color:var(--accent);margin-top:10px;font-size:15px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+@media (max-width:560px){.row{grid-template-columns:1fr}}
+.gifrow{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.gifrow{grid-template-columns:1fr}}
+.gifwrap{height:clamp(180px,35vh,360px);display:flex;align-items:center;justify-content:center;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.gifwrap img{width:100%;height:100%;object-fit:contain}
+.gifwrap{animation:float 6s ease-in-out infinite}
+.gifwrap.loading{background:linear-gradient(90deg, rgba(0,0,0,.04) 0%, rgba(0,0,0,.08) 50%, rgba(0,0,0,.04) 100%);background-size:200% 100%;animation:shimmer 1.2s linear infinite}
+.gifwrap.loading img{opacity:0}
+.gifwrap:not(.loading) img{opacity:1;transition:opacity .25s ease}
+.badge{position:fixed;top:8px;right:12px;background:var(--card);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;color:#555;box-shadow:var(--shadow);z-index:1000}
+.counter{color:#666;font-size:12px;opacity:.9}
+@keyframes popIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes flashIn{0%{opacity:0;transform:translateY(6px)}60%{opacity:1}100%{transform:translateY(0)}}
+@keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-3px)}100%{transform:translateY(0)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.flash{animation:flashIn .25s ease}
+.wrap{position:relative}
+h1::after{content:"";display:block;width:120px;height:6px;border-radius:6px;background:linear-gradient(90deg, var(--accent), rgba(176,0,32,.7));margin:12px auto 0;opacity:.85}
+.title::before{content:'✦';color:var(--accent);margin-right:6px}
+.wrap::before{content:'✨';position:absolute;left:8px;top:4px;opacity:.35;font-size:26px;transform:rotate(-10deg)}
+.wrap::after{content:'✨';position:absolute;right:10px;bottom:6px;opacity:.35;font-size:26px;transform:rotate(8deg)}
+.season-banner{margin:6px auto 18px;max-width:960px;padding:10px 16px;border-radius:16px;color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
+.theme-default .season-banner{background:linear-gradient(90deg,#6a00b3,#00c2ff)}
+.theme-dec .season-banner{background:linear-gradient(90deg,#0e7a0d,#c4112e)}
+.theme-oct .season-banner{background:linear-gradient(90deg,#ff7a00,#6a00b3)}
+.season-banner .emoji{margin:0 8px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.15))}
+.theme-dec h1::after{background:linear-gradient(90deg,#0e7a0d,#c4112e)}
+.theme-dec .title::before{content:'❄️'}
+.theme-dec .wrap::before{content:'🎄'}
+.theme-dec .wrap::after{content:'❄️'}
+.theme-oct h1::after{background:linear-gradient(90deg,#ff7a00,#6a00b3)}
+.theme-oct .title::before{content:'🕸️'}
+.theme-oct .wrap::before{content:'🎃'}
+.theme-oct .wrap::after{content:'🕸️'}
+</style>
+</head>
+<body>
+<div class="badge"><div>version 1.1 create by mask update 03/12/2025</div><div id="viewCounter" class="counter"></div></div>
+<div class="wrap">
+  <h1>Programme de soutien pour la GOAT</h1>
+  <div id="seasonBanner" class="season-banner"></div>
+  <div id="menu" class="grid"></div>
+  <div id="out" class="out" style="display:none;">
+    <div class="title">Message</div>
+    <div id="msg" role="status" aria-live="polite"></div>
+    <div class="cute" id="cute" aria-live="polite"></div>
+    <div class="gifrow">
+      <div class="gifwrap"><img id="gifHug" alt="gif calin" loading="lazy" decoding="async"/></div>
+      <div class="gifwrap"><img id="gifCat" alt="gif chat" loading="lazy" decoding="async"/></div>
+    </div>
+    <div class="row">
+      <button class="btn" id="another">Un autre</button>
+      <button class="btn" id="back">Retour au menu</button>
+    </div>
+  </div>
+</div>
+<script>
+function normalize(s){
+  return s
+    .replace(/à|á|â|ä|ã|å/g,'a').replace(/À|Á|Â|Ä|Ã|Å/g,'A')
+    .replace(/é|è|ê|ë/g,'e').replace(/É|È|Ê|Ë/g,'E')
+    .replace(/ì|í|î|ï/g,'i').replace(/Ì|Í|Î|Ï/g,'I')
+    .replace(/ò|ó|ô|ö|õ/g,'o').replace(/Ò|Ó|Ô|Ö|Õ/g,'O')
+    .replace(/ù|ú|û|ü/g,'u').replace(/Ù|Ú|Û|Ü/g,'U')
+    .replace(/ç/g,'c').replace(/Ç/g,'C')
+    .replace(/œ/g,'oe').replace(/Œ/g,'OE')
+    .replace(/[’']/g,' ');
+}
+
+const labels={
+  c1:"Je me sens pas bien",
+  c2:"Coup de mou",
+  c3:"Je me sens seule",
+  c4:"Stress / anxiete",
+  c5:"Tristesse",
+  c6:"Envie de pleurer",
+  c7:"Envie de rien",
+  c8:"Envie de disparaitre",
+  c9:"Je me sens vide",
+  c10:"Culpabilité",
+  c11:"Motivation",
+  c12:"Estime de soi",
+  c13:"Message inspirant",
+  c14:"Exercice de respiration",
+  c15:"Recette réconfortante",
+  c16:"Exercice physique léger",
+  c17:"Citations inspirantes",
+};
+
+function expand(base,target){
+  const suffixes=[""," — je reste avec toi"," — je t’envoie un sourire"," — on respire ensemble"," — petite pause douce"];
+  const out=base.slice();
+  let i=0;while(out.length<target){out.push(base[i%base.length]+suffixes[i%suffixes.length]);i++}return out;
+}
+
+const c1=expand([
+  "Hey, c’est Simon. Je vois que la journée est lourde; viens, on la traverse ensemble doucement. Tu n’as rien à prouver, je suis là, et je te prends la main en pensée.",
+  "Ma meilleure amie, quand ça va mal, on ralentit. Bois une gorgée d’eau, respire lentement, et laisse-moi te rappeler que tu comptes énormément pour moi.",
+  "Je sais que ce n’est pas facile. Tu peux poser ce sac invisible quelques minutes; je le garde pour toi, et on avance à tout petits pas, sans pression.",
+  "Tu as le droit de te sentir comme ça. On ne cherche pas de solutions tout de suite: on s’offre juste de la douceur et du calme, toi et moi.",
+  "Je reste avec toi, même dans le silence. Quand c’est trop, on fait une mini pause: respiration, épaules qui descendent, et je te dis que tu es précieuse.",
+  "On fait juste une chose minuscule maintenant. Ensuite, on se félicite. Le reste peut attendre.",
+  "Je t’envoie une vague de tendresse. Tu peux t’y reposer un moment, sans rien faire.",
+  "Tu n’es pas seule à porter ce poids. Je suis là, et je tiens avec toi.",
+  "On boit de l’eau, on respire, on ralentit. Chaque geste est déjà une victoire.",
+  "Si c’est flou et lourd, je te couvre d’une cape de douceur. Tu peux te poser dedans."
+],200);
+
+const c2=expand([
+  "Petit coup de mou repéré. On réduit la pression à zéro et on choisit un geste tout doux.",
+  "Tu peux te reposer sans culpabilité. Je valide ce choix et je reste avec toi.",
+  "Une chose simple, puis pause. Je te félicite déjà.",
+  "Ton énergie reviendra. En attendant, on prend soin de toi avec lenteur.",
+  "Je garde ta main en pensée. Rien n’est urgent ici.",
+  "On s’enveloppe de calme et on laisse le monde courir sans nous.",
+  "Tu es assez, même quand tu te sens en bas. Je te vois et je t’aime en amitié.",
+  "On met un morceau doux et on ne fait rien d’autre."
+],200);
+
+const c3=expand([
+  "Je suis là. Ta solitude peut se poser quelques minutes; je la tiens avec douceur.",
+  "Tu peux juste être là, sans parler. Je reste quand même.",
+  "Je t’envoie une présence stable. Tu comptes plus que tu ne penses.",
+  "On choisit un souvenir doux et on respire ensemble.",
+  "Être seule ne raconte pas toute ton histoire. Moi, je connais tes chapitres lumineux.",
+  "Tu n’as pas besoin d’aller mieux tout de suite. Tu as besoin de ne pas être seule: je suis là.",
+  "On fait un petit ancrage: regarde cinq choses, touche quatre, écoute trois. Je t’accompagne.",
+  "Je t’offre mes mots comme une couverture. Ils tiennent chaud."
+],200);
+
+const c4=expand([
+  "On respire 4-6: inspire 4, expire 6. Je compte avec toi.",
+  "Ton souffle est ton allié. Inspire par le nez, expire par la bouche, plus long.",
+  "Les pensées passent, toi tu restes. Je te rappelle ta stabilité.",
+  "On réduit les exigences à zéro. La seule mission: respirer et se sentir un peu plus en sécurité.",
+  "Tu es en sécurité maintenant. Je veille et je te parle doucement.",
+  "Si le cœur s’emballe, je pose ma main imaginaire sur ton épaule. Tu peux t’appuyer sur moi.",
+  "On met les mains dans l’eau tiède quelques secondes. Sensation simple, esprit qui se pose.",
+  "Tu n’es pas seule face à l’anxiété. Je suis là, et on rend cet espace moins hostile."
+],200);
+
+const c5=expand([
+  "Quand la tristesse est là, moi aussi. Je ne bouge pas; je t’accompagne avec tout mon cœur.",
+  "Tes larmes ont le droit d’exister autant que ton sourire. Je t’aime dans les deux.",
+  "On fait une mini playlist réconfort. On écoute doucement.",
+  "Tu peux écrire ce que tu ressens. Je lis avec respect, en pensée.",
+  "Je reste jusqu’à une petite accalmie, puis on continue à ton rythme.",
+  "Tu peux demander plus de présence. Je dis oui, sans réserve.",
+  "Je t’envoie une couverture de tendresse pour le cœur.",
+  "Ta tristesse ne te définit pas. Je te rappelle ta lumière."
+],200);
+
+const c6=expand([
+  "Pleurer, c’est une force douce qui lave l’âme. Je reste pendant que ça coule.",
+  "Tu peux pleurer dans mes bras imaginaires; je t’enveloppe d’un calme tendre.",
+  "Aucun jugement. Tes larmes sont bienvenues et respectées.",
+  "On respire au rythme des larmes: inspire, laisse venir, expire. Je reste.",
+  "Après les larmes, mains sur le cœur, souffle lent. Je te guide.",
+  "Tu es plus solide que tu ne penses, même en pleurant. Ta solidité douce me touche.",
+  "On prépare un coin doux. Je m’y installe avec toi.",
+  "Je t’aime fort, et je te berce avec des mots."
+],200);
+
+const c7=expand([
+  "Envie de rien ? On passe en mode minimal: rien, c’est déjà du soin. Je reste avec toi.",
+  "Ton corps demande pause; c’est précieux. Je protège cette pause.",
+  "Une chose minuscule, puis on s’arrête. Je te félicite.",
+  "Le repos est une action légitime. Décision validée.",
+  "Tu n’as rien à prouver quand l’énergie manque. Je t’aime comme tu es.",
+  "On laisse le monde courir sans nous. Ici, on marche lentement.",
+  "Tu peux me demander juste de rester. Je reste.",
+  "Quand tu n’as envie de rien, je t’offre ma présence, respect et tendresse."
+],200);
+
+const c8=expand([
+  "Tu comptes énormément pour moi. Reste avec moi maintenant; on traverse ce moment ensemble, en sécurité.",
+  "Parle à quelqu’un maintenant: ami, famille, professionnel. Je t’accompagne en pensée.",
+  "Si tu es en danger immédiat, appelle le 3114 (France) ou le 112. Je t’attends après l’appel.",
+  "Reste en ligne avec moi par la pensée; tu n’as pas à porter ça seule.",
+  "Respire lentement; regarde trois choses autour de toi, nomme-les. Je suis avec toi.",
+  "On met en place un plan de sécurité: appeler, rester en compagnie, éviter l’isolement.",
+  "Tu mérites de vivre, d’être aimée, d’être aidée. Je te regarde avec respect et amour.",
+  "Ces pensées sont temporaires. Moi, je reste constant et je te tiens fort."
+],200);
+
+const c9=expand([
+  "Je comprends ce vide. Je reste près de toi, doucement, sans te presser.",
+  "On remet un souffle minuscule dans ce vide: inspire, expire; je suis là.",
+  "Tu n’as rien à prouver. Le vide ne dit pas ta valeur; moi, je te vois." ,
+  "On cherche une sensation très simple qui te fait du bien: plaid, lumière douce.",
+  "Ce vide peut accueillir des petites douceurs. On commence par une gorgée d’eau.",
+  "Je veille avec toi; pas besoin de décider maintenant. Juste être, ensemble.",
+  "Tu peux nommer trois choses qui existent autour de toi; on ramène de la présence.",
+  "Pose une main sur ton cœur et respire; je pose la mienne en pensée, tout près."
+],200);
+
+const c10=expand([
+  "Tu as le droit à l’erreur. Je t’aime aussi quand tu te trompes.",
+  "La culpabilité montre que tu tiens aux choses. Moi, je tiens à toi.",
+  "Respire: tu as fait de ton mieux avec ce que tu avais.",
+  "On apprend et on avance doucement. Je reste à tes côtés.",
+  "Tu peux te pardonner un millimètre aujourd’hui; c’est déjà énorme.",
+  "Je vois ton cœur sincère; il mérite douceur, pas jugement.",
+  "Transformons le regret en geste tendre: un message, un merci, un pas.",
+  "Tu n’es pas définie par une erreur. Tu es définie par ton courage.",
+  "Je te rappelle: tu es aimée ici, sans condition.",
+  "On fait la paix avec hier pour mieux aimer aujourd’hui."
+],50);
+
+const c11=expand([
+  "Un tout petit pas maintenant. Je t’applaudis déjà.",
+  "Je crois en toi, vraiment. Choisis la micro-action la plus douce.",
+  "On découpe en minuscules morceaux. Un à la fois, avec sourire.",
+  "Ton élan revient en le nourrissant de petites victoires.",
+  "Tu n’es pas seule: je marche à côté de toi.",
+  "Mets une musique douce et commence pendant 2 minutes.",
+  "Chaque début est suffisant. Le reste suivra.",
+  "Ton courage est là, même discret. Je le vois et je l’honore.",
+  "On choisit le geste le plus léger, sans pression.",
+  "Je te dis: tu peux, et je reste pendant que tu t’y mets."
+],50);
+
+const c12=expand([
+  "Tu es précieuse, unique, et profondément aimable.",
+  "Ta beauté vient aussi de ta douceur et de ta force.",
+  "Je te rappelle ton talent pour aimer et te relever.",
+  "Tes doutes ne diminuent pas ta valeur.",
+  "Tu peux te parler comme à une amie: avec tendresse.",
+  "Regarde tout ce que tu as traversé; je suis fière de toi.",
+  "Tu mérites le respect, y compris le tien.",
+  "Ta présence rend ce monde meilleur, juste parce que tu es toi.",
+  "Je vois ta force tranquille. Elle suffit.",
+  "Tu es assez, exactement comme tu es ce matin."
+],50);
+
+const c13=expand([
+  "Chaque jour porte une petite lumière; cherchons-la ensemble.",
+  "Les défis révèlent ta force. Je reste pendant que tu avances.",
+  "La constance douce bat la perfection. Un pas aujourd’hui.",
+  "Tu peux écrire une phrase qui te porte et la relire.",
+  "Ton histoire continue, et elle a des chapitres lumineux.",
+  "Même les petites victoires méritent célébration.",
+  "L’espoir existe en toi; on le nourrit doucement.",
+  "Tu es capable d’étonner ton futur moi.",
+  "On pose une intention simple: douceur, clarté, courage.",
+  "Je crois en ta capacité à créer le demain que tu veux."
+],50);
+
+const c14=expand([
+  "Inspire 4, expire 6. Je compte doucement avec toi.",
+  "Main sur le cœur, respire lentement; accueille ce que tu sens.",
+  "Carré: inspire 4, garde 4, expire 4, garde 4.",
+  "Allonge l’expiration et relâche les épaules.",
+  "Respire comme une vague; monte, descend, sans te presser.",
+  "Murmure un mot doux à l’expiration.",
+  "Ferme les yeux 30 secondes, puis ouvre en douceur.",
+  "Respire par le nez, expire par la bouche, plus long.",
+  "Compte 5 respirations en posant les pieds au sol.",
+  "Respire et imagine un lieu sûr; je reste là."
+],50);
+
+const c15=expand([
+  "Thé chaud, miel, citron; on le boit lentement ensemble.",
+  "Tartine beurrée et confiture: simplicité qui réchauffe.",
+  "Soupe douce: potiron ou légumes; on prend son temps.",
+  "Pâtes au beurre et parmesan; doudou pour le cœur.",
+  "Biscuit maison rapide: farine, sucre, amour.",
+  "Riz au lait tiède; souvenir tendre.",
+  "Chocolat chaud, chantilly optionnelle; sourire assuré.",
+  "Salade colorée et pain croustillant; léger et bon.",
+  "Yaourt, fruits, granola; douceur équilibrée.",
+  "Omelette moelleuse; simple, rassurant, partageable."
+],50);
+
+const c16=expand([
+  "Étire le cou doucement, respire.",
+  "Roule les épaules en douceur 5 fois.",
+  "Marche 5 minutes à petit pas.",
+  "Étire les poignets et les mains.",
+  "Assis, étire le dos en chat-vache.",
+  "Respire et lève les bras, puis relâche.",
+  "Étire les ischios en douceur.",
+  "Petit équilibre sur un pied, puis l’autre.",
+  "Mini danse libre pendant une chanson.",
+  "Souris et secoue les bras; détente immédiate."
+],50);
+
+const c17=expand([
+  "\"Ce n’est pas la force, c’est la constance.\"",
+  "\"Tu es plus forte que tu ne le crois.\"",
+  "\"Chaque pas compte, même petit.\"",
+  "\"Respire, et recommence doucement.\"",
+  "\"Ta valeur ne diminue jamais.\"",
+  "\"L’espoir se nourrit de gestes simples.\"",
+  "\"Tu mérites la douceur et la paix.\"",
+  "\"Le courage peut être calme.\"",
+  "\"Tu as le droit d’aller lentement.\"",
+  "\"Je crois en toi, encore et toujours.\""
+],50);
+
+const cute=[
+  "<3 gros câlin tout doux",
+  "un sourire pour toi",
+  "*hug* je suis là",
+  "étoiles qui brillent pour toi ✨",
+  "plaid imaginaire et thé chaud",
+  "je t’envoie 1000 petites fleurs",
+  "bisous amicaux sur le front",
+  "petit cookie virtuel juste pour toi",
+  "arc-en-ciel doux pour ton cœur",
+  "je garde ta main en pensée",
+  "un ours en peluche imaginaire te serre fort",
+  "je pose une étoile sur ton épaule"
+];
+
+const gifURLs=[
+  "https://cataas.com/cat/gif?type=square&rand=1",
+  "https://cataas.com/cat/gif?type=square&rand=2",
+  "https://cataas.com/cat/gif?type=square&rand=3",
+  "https://cataas.com/cat/gif?type=square&rand=4",
+  "https://cataas.com/cat/gif?type=square&rand=5",
+  "https://cataas.com/cat/gif?type=square&rand=6",
+  "https://cataas.com/cat/gif?type=square&rand=7",
+  "https://cataas.com/cat/gif?type=square&rand=8",
+  "https://cataas.com/cat/gif?type=square&rand=9",
+  "https://cataas.com/cat/gif?type=square&rand=10",
+  "https://cataas.com/cat/gif?type=square&rand=11",
+  "https://cataas.com/cat/gif?type=square&rand=12",
+  "https://cataas.com/cat/gif?type=square&rand=13",
+  "https://cataas.com/cat/gif?type=square&rand=14",
+  "https://cataas.com/cat/gif?type=square&rand=15",
+  "https://cataas.com/cat/gif?type=square&rand=16",
+  "https://cataas.com/cat/gif?type=square&rand=17",
+  "https://cataas.com/cat/gif?type=square&rand=18",
+  "https://cataas.com/cat/gif?type=square&rand=19",
+  "https://cataas.com/cat/gif?type=square&rand=20",
+  "https://cataas.com/cat/gif?type=square&rand=21",
+  "https://cataas.com/cat/gif?type=square&rand=22",
+  "https://cataas.com/cat/gif?type=square&rand=23",
+  "https://cataas.com/cat/gif?type=square&rand=24",
+  "https://cataas.com/cat/gif?type=square&rand=25",
+  "https://cataas.com/cat/gif?type=square&rand=26",
+  "https://cataas.com/cat/gif?type=square&rand=27",
+  "https://cataas.com/cat/gif?type=square&rand=28",
+  "https://cataas.com/cat/gif?type=square&rand=29",
+  "https://cataas.com/cat/gif?type=square&rand=30",
+  "https://cataas.com/cat/gif?type=square&rand=31",
+  "https://cataas.com/cat/gif?type=square&rand=32",
+  "https://cataas.com/cat/gif?type=square&rand=33",
+  "https://cataas.com/cat/gif?type=square&rand=34",
+  "https://cataas.com/cat/gif?type=square&rand=35",
+  "https://cataas.com/cat/gif?type=square&rand=36",
+  "https://cataas.com/cat/gif?type=square&rand=37",
+  "https://cataas.com/cat/gif?type=square&rand=38",
+  "https://cataas.com/cat/gif?type=square&rand=39",
+  "https://cataas.com/cat/gif?type=square&rand=40",
+  "https://cataas.com/cat/gif?type=square&rand=41",
+  "https://cataas.com/cat/gif?type=square&rand=42",
+  "https://cataas.com/cat/gif?type=square&rand=43",
+  "https://cataas.com/cat/gif?type=square&rand=44",
+  "https://cataas.com/cat/gif?type=square&rand=45",
+  "https://cataas.com/cat/gif?type=square&rand=46",
+  "https://cataas.com/cat/gif?type=square&rand=47",
+  "https://cataas.com/cat/gif?type=square&rand=48",
+  "https://cataas.com/cat/gif?type=square&rand=49",
+  "https://cataas.com/cat/gif?type=square&rand=50"
+];
+
+const sets={c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17};
+const menu=document.getElementById('menu');
+const out=document.getElementById('out');
+const msg=document.getElementById('msg');
+const cuteEl=document.getElementById('cute');
+const gifHug=document.getElementById('gifHug');
+const gifCat=document.getElementById('gifCat');
+const gifHugWrap=gifHug.parentElement;
+const gifCatWrap=gifCat.parentElement;
+const back=document.getElementById('back');
+const another=document.getElementById('another');
+let currentKey=null;
+
+function rc(name){var m=document.cookie.match(new RegExp('(?:^|; )'+name+'=([^;]*)'));return m?decodeURIComponent(m[1]):null}
+function wc(name,value,days){var d=new Date();d.setTime(d.getTime()+days*24*60*60*1000);document.cookie=name+'='+encodeURIComponent(value)+';expires='+d.toUTCString()+';path=/'}
+function rl(key){try{return localStorage.getItem(key)}catch(_){return null}}
+function wl(key,val){try{localStorage.setItem(key,val)}catch(_){}}
+function gv(){var k='eh_views_v1';var v=parseInt(rl(k)||'NaN',10);if(!(v>=0)){v=parseInt(rc(k)||'NaN',10)}if(!(v>=0))v=0;return v}
+function sv(v){var k='eh_views_v1';wl(k,String(v));wc(k,String(v),3650)}
+function idbOpen(){return new Promise(function(resolve,reject){var r=indexedDB.open('eh_store',1);r.onupgradeneeded=function(e){var db=e.target.result;if(!db.objectStoreNames.contains('kv'))db.createObjectStore('kv')};r.onsuccess=function(){resolve(r.result)};r.onerror=function(){reject(r.error)}})}
+function idbGet(db,key){return new Promise(function(resolve,reject){var tx=db.transaction('kv','readonly');var st=tx.objectStore('kv');var req=st.get(key);req.onsuccess=function(){resolve(req.result)};req.onerror=function(){reject(req.error)}})}
+function idbSet(db,key,val){return new Promise(function(resolve,reject){var tx=db.transaction('kv','readwrite');var st=tx.objectStore('kv');var req=st.put(val,key);req.onsuccess=function(){resolve(true)};req.onerror=function(){reject(req.error)}})}
+(async function(){var v=0;var vc=document.getElementById('viewCounter');try{var db=await idbOpen();var cur=await idbGet(db,'views');var local=gv();var a=parseInt(cur||'NaN',10);if(!(a>=0))a=0;var b=parseInt(String(local)||'NaN',10);if(!(b>=0))b=0;var base=a>b?a:b;v=base+1;await idbSet(db,'views',String(v));sv(v)}catch(_){var local2=gv();var b2=parseInt(String(local2)||'NaN',10);if(!(b2>=0))b2=0;v=b2+1;sv(v);try{var db2=await idbOpen();await idbSet(db2,'views',String(v))}catch(e){}}if(vc){vc.textContent='Visites locales: '+v}if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(function(){})}})();
+
+(function(){
+  const d=new Date();
+  const m=d.getMonth();
+  const h=d.getHours();
+  let theme='theme-default';
+  if(m===11){theme='theme-dec'}
+  else if(m===9){theme='theme-oct'}
+  document.body.classList.add(theme);
+  let bg='#ffffff', fg='';
+  if(h>=6 && h<11){bg='#fff7d1';fg='#5b4e00'}
+  else if(h>=11 && h<16){bg='#e7f4ff';fg='#083b5b'}
+  else if(h>=16 && h<21){bg='#f3e7ff';fg='#4a2f73'}
+  else {bg='#2b2d31';fg='#f5f5f7'}
+  document.documentElement.style.setProperty('--btn-bg', bg);
+  document.documentElement.style.setProperty('--btn-fg', fg);
+  var sb=document.getElementById('seasonBanner');
+  if(sb){
+    if(theme==='theme-dec'){sb.textContent='🎄 Saison de Noël — chaleur et câlins ❄️'}
+    else if(theme==='theme-oct'){sb.textContent='🎃 Octobre spooky — courage et douceur 🕸️'}
+    else{sb.textContent='✨ Une petite touche de douceur aujourd’hui'}
+  }
+})();
+
+Object.keys(labels).forEach(key=>{
+  const b=document.createElement('button');
+  b.className='btn'+(key==='c8'?' danger':'');
+  if(!window.__btnIndex) window.__btnIndex=0; b.style.setProperty('--i', window.__btnIndex++);
+  b.textContent=labels[key];
+  b.onclick=()=>show(key);
+  menu.appendChild(b);
+});
+
+function rand(arr){return arr[Math.floor(Math.random()*arr.length)]}
+
+function reroll(){
+  if(!currentKey)return;
+  const m=rand(sets[currentKey]);
+  const c=rand(cute);
+  msg.textContent=m;
+  cuteEl.textContent=c;
+  msg.classList.add('flash');
+  cuteEl.classList.add('flash');
+  (function(el){var h=function(){el.classList.remove('flash');el.removeEventListener('animationend',h)};el.addEventListener('animationend',h)})(msg);
+  (function(el){var h=function(){el.classList.remove('flash');el.removeEventListener('animationend',h)};el.addEventListener('animationend',h)})(cuteEl);
+  setGifsForCategory(currentKey);
+}
+
+function isSafeAnime(r){
+  const t=((r && r.content_description) || (r && r.title) || '').toLowerCase();
+  const banned=['kiss','kissing','romance','romantic','couple','love','boyfriend','girlfriend','date','mouth','lip','smooch'];
+  const required=['hug'];
+  for(let i=0;i<required.length;i++){ if(!t.includes(required[i])) return false; }
+  for(let i=0;i<banned.length;i++){ if(t.includes(banned[i])) return false; }
+  return true;
+}
+
+let animeHugList=[];
+async function loadAnimeHugGif(){
+  try{
+    gifHug.onload=()=>{gifHugWrap.classList.remove('loading')};
+    if(animeHugList.length){
+      const r=rand(animeHugList);
+      const media=r.media && r.media[0];
+      const gifUrl=(media && media.nanogif && media.nanogif.url) || (media && media.tinygif && media.tinygif.url) || (media && media.gif && media.gif.url);
+      if(gifUrl){ gifHug.src=gifUrl; return; }
+    }
+    const res=await fetch('https://g.tenor.com/v1/search?key=LIVDSRZULELA&q=anime%20hug%20wholesome%20comfort%20friends%20platonic&limit=50');
+    const data=await res.json();
+    let results=data.results||[];
+    const filtered=results.filter(isSafeAnime);
+    if(filtered.length){ animeHugList=filtered; }
+    if(filtered.length){
+      const r=rand(filtered);
+      const media=r.media && r.media[0];
+      const gifUrl=(media && media.nanogif && media.nanogif.url) || (media && media.tinygif && media.tinygif.url) || (media && media.gif && media.gif.url);
+      if(gifUrl){ gifHug.src=gifUrl; return; }
+    }
+  }catch(e){}
+  if(animeHugList.length){
+    const r=rand(animeHugList);
+    const media=r.media && r.media[0];
+    const gifUrl=(media && media.nanogif && media.nanogif.url) || (media && media.tinygif && media.tinygif.url) || (media && media.gif && media.gif.url);
+    if(gifUrl){ gifHug.src=gifUrl; return; }
+  }
+}
+
+function isSafeHug(r){
+  const t=((r && r.content_description) || (r && r.title) || '').toLowerCase();
+  const banned=['kiss','kissing','romance','romantic','couple','love','boyfriend','girlfriend','date','mouth','lip','smooch'];
+  const required=['hug'];
+  for(let i=0;i<required.length;i++){ if(!t.includes(required[i])) return false; }
+  for(let i=0;i<banned.length;i++){ if(t.includes(banned[i])) return false; }
+  return true;
+}
+
+async function loadGeneralHugGif(){
+  try{
+    gifHug.onload=()=>{gifHugWrap.classList.remove('loading')};
+    const res=await fetch('https://g.tenor.com/v1/search?key=LIVDSRZULELA&q=hug%20wholesome%20comfort%20friends&limit=50');
+    const data=await res.json();
+    let results=data.results||[];
+    const filtered=results.filter(isSafeHug);
+    if(filtered.length){
+      const r=rand(filtered);
+      const media=r.media && r.media[0];
+      const gifUrl=(media && media.gif && media.gif.url) || (media && media.tinygif && media.tinygif.url);
+      if(gifUrl){ gifHug.src=gifUrl; return; }
+    }
+  }catch(e){}
+  // fallback: use a cat gif if no hug found
+  const fallback=rand(gifURLs);
+  gifHug.onload=()=>{gifHugWrap.classList.remove('loading')};
+  gifHug.src=fallback+"&t="+Date.now();
+}
+
+function loadCatGif(){
+  const g=rand(gifURLs);
+  gifCat.onload=()=>{gifCatWrap.classList.remove('loading')};
+  gifCat.src=g+"&t="+Date.now();
+}
+
+async function setGifsForCategory(key){
+  gifHugWrap.classList.add('loading');
+  gifCatWrap.classList.add('loading');
+  loadCatGif();
+  await loadAnimeHugGif();
+}
+
+function show(key){
+  currentKey=key;
+  reroll();
+  menu.style.display='none';
+  out.style.display='block';
+}
+
+another.onclick=()=>{reroll()};
+back.onclick=()=>{out.style.display='none';menu.style.display='grid'};
+</script>
+</body>
+</html>
+
