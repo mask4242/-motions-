@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Programme de soutien</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;background:#f7f7f9;color:#111}
+.wrap{max-width:800px;margin:0 auto;padding:24px}
+h1{font-size:24px;margin:0 0 16px;text-align:center}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:480px){.grid{grid-template-columns:1fr}}
+.btn{appearance:none;border:none;border-radius:12px;padding:14px 16px;font-size:16px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.btn:active{transform:scale(.99)}
+.danger{background:#fee}
+.out{margin-top:20px;background:#fff;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.title{font-weight:600;color:#b00020;margin-bottom:8px}
+.cute{color:#6a00b3;margin-top:12px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+  @media (max-width:420px){.row{grid-template-columns:1fr}}
+  .gifwrap{margin-top:14px;height:clamp(160px,32vh,320px);display:flex;align-items:center;justify-content:center;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .gifwrap img{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Programme de soutien</h1>
+  <div id="menu" class="grid"></div>
+  <div id="out" class="out" style="display:none;">
+    <div class="title">Message</div>
+    <div id="msg"></div>
+    <div class="cute" id="cute"></div>
+    <div class="gifwrap"><img id="gif" alt="gif mignon"/></div>
+    <div class="row">
+      <button class="btn" id="another">Un autre</button>
+      <button class="btn" id="back">Retour au menu</button>
+    </div>
+  </div>
+</div>
+<script>
+function normalize(s){
+  return s
+    .replace(/à|á|â|ä|ã|å/g,'a').replace(/À|Á|Â|Ä|Ã|Å/g,'A')
+    .replace(/é|è|ê|ë/g,'e').replace(/É|È|Ê|Ë/g,'E')
+    .replace(/ì|í|î|ï/g,'i').replace(/Ì|Í|Î|Ï/g,'I')
+    .replace(/ò|ó|ô|ö|õ/g,'o').replace(/Ò|Ó|Ô|Ö|Õ/g,'O')
+    .replace(/ù|ú|û|ü/g,'u').replace(/Ù|Ú|Û|Ü/g,'U')
+    .replace(/ç/g,'c').replace(/Ç/g,'C')
+    .replace(/œ/g,'oe').replace(/Œ/g,'OE')
+    .replace(/[’']/g,' ');
+}
+
+const labels={
+  c1:"Je me sens pas bien",
+  c2:"Coup de mou",
+  c3:"Je me sens seule",
+  c4:"Stress / anxiete",
+  c5:"Tristesse",
+  c6:"Envie de pleurer",
+  c7:"Envie de rien",
+  c8:"Envie de disparaitre"
+};
+
+function expand(base,target){
+  const suffixes=[""," — je reste avec toi"," — je t envoie un sourire"," — on respire ensemble"," — petite pause douce"];
+  const out=base.slice();
+  let i=0;while(out.length<target){out.push(base[i%base.length]+suffixes[i%suffixes.length]);i++}return out;
+}
+
+const c1=expand([
+  "Hey, c’est Simon. Je vois que la journée est lourde; viens, on la traverse ensemble doucement. Tu n’as rien à prouver, je suis là, et je te prends la main en pensée.",
+  "Ma meilleure amie, quand ça va mal, on ralentit. Bois une gorgée d’eau, respire lentement, et laisse-moi te rappeler que tu comptes énormément pour moi.",
+  "Je sais que ce n’est pas facile. Tu peux poser ce sac invisible quelques minutes; je le garde pour toi, et on avance à tout petits pas, sans pression.",
+  "Tu as le droit de te sentir comme ça. On ne cherche pas de solutions tout de suite: on s’offre juste de la douceur et du calme, toi et moi.",
+  "Je reste avec toi, même dans le silence. Quand c’est trop, on fait une mini pause: respiration, épaules qui descendent, et je te dis que tu es précieuse.",
+  "On fait juste une chose minuscule maintenant. Ensuite, on se félicite. Le reste peut attendre.",
+  "Je t’envoie une vague de tendresse. Tu peux t’y reposer un moment, sans rien faire.",
+  "Tu n’es pas seule à porter ce poids. Je suis là, et je tiens avec toi.",
+  "On boit de l’eau, on respire, on ralentit. Chaque geste est déjà une victoire.",
+  "Si c’est flou et lourd, je te couvre d’une cape de douceur. Tu peux te poser dedans."
+],100);
+
+const c2=expand([
+  "Petit coup de mou repéré. On réduit la pression à zéro et on choisit un geste tout doux.",
+  "Tu peux te reposer sans culpabilité. Je valide ce choix et je reste avec toi.",
+  "Une chose simple, puis pause. Je te félicite déjà.",
+  "Ton énergie reviendra. En attendant, on prend soin de toi avec lenteur.",
+  "Je garde ta main en pensée. Rien n’est urgent ici.",
+  "On s’enveloppe de calme et on laisse le monde courir sans nous.",
+  "Tu es assez, même quand tu te sens en bas. Je te vois et je t’aime en amitié.",
+  "On met un morceau doux et on ne fait rien d’autre."
+],100);
+
+const c3=expand([
+  "Je suis là. Ta solitude peut se poser quelques minutes; je la tiens avec douceur.",
+  "Tu peux juste être là, sans parler. Je reste quand même.",
+  "Je t’envoie une présence stable. Tu comptes plus que tu ne penses.",
+  "On choisit un souvenir doux et on respire ensemble.",
+  "Être seule ne raconte pas toute ton histoire. Moi, je connais tes chapitres lumineux.",
+  "Tu n’as pas besoin d’aller mieux tout de suite. Tu as besoin de ne pas être seule: je suis là.",
+  "On fait un petit ancrage: regarde cinq choses, touche quatre, écoute trois. Je t’accompagne.",
+  "Je t’offre mes mots comme une couverture. Ils tiennent chaud."
+],100);
+
+const c4=expand([
+  "On respire 4-6: inspire 4, expire 6. Je compte avec toi.",
+  "Ton souffle est ton allié. Inspire par le nez, expire par la bouche, plus long.",
+  "Les pensées passent, toi tu restes. Je te rappelle ta stabilité.",
+  "On réduit les exigences à zéro. La seule mission: respirer et se sentir un peu plus en sécurité.",
+  "Tu es en sécurité maintenant. Je veille et je te parle doucement.",
+  "Si le cœur s’emballe, je pose ma main imaginaire sur ton épaule. Tu peux t’appuyer sur moi.",
+  "On met les mains dans l’eau tiède quelques secondes. Sensation simple, esprit qui se pose.",
+  "Tu n’es pas seule face à l’anxiété. Je suis là, et on rend cet espace moins hostile."
+],100);
+
+const c5=expand([
+  "Quand la tristesse est là, moi aussi. Je ne bouge pas; je t’accompagne avec tout mon cœur.",
+  "Tes larmes ont le droit d’exister autant que ton sourire. Je t’aime dans les deux.",
+  "On fait une mini playlist réconfort. On écoute doucement.",
+  "Tu peux écrire ce que tu ressens. Je lis avec respect, en pensée.",
+  "Je reste jusqu’à une petite accalmie, puis on continue à ton rythme.",
+  "Tu peux demander plus de présence. Je dis oui, sans réserve.",
+  "Je t’envoie une couverture de tendresse pour le cœur.",
+  "Ta tristesse ne te définit pas. Je te rappelle ta lumière."
+],100);
+
+const c6=expand([
+  "Pleurer, c’est une force douce qui lave l’âme. Je reste pendant que ça coule.",
+  "Tu peux pleurer dans mes bras imaginaires; je t’enveloppe d’un calme tendre.",
+  "Aucun jugement. Tes larmes sont bienvenues et respectées.",
+  "On respire au rythme des larmes: inspire, laisse venir, expire. Je reste.",
+  "Après les larmes, mains sur le cœur, souffle lent. Je te guide.",
+  "Tu es plus solide que tu ne penses, même en pleurant. Ta solidité douce me touche.",
+  "On prépare un coin doux. Je m’y installe avec toi.",
+  "Je t’aime fort, et je te berce avec des mots."
+],100);
+
+const c7=expand([
+  "Envie de rien ? On passe en mode minimal: rien, c’est déjà du soin. Je reste avec toi.",
+  "Ton corps demande pause; c’est précieux. Je protège cette pause.",
+  "Une chose minuscule, puis on s’arrête. Je te félicite.",
+  "Le repos est une action légitime. Décision validée.",
+  "Tu n’as rien à prouver quand l’énergie manque. Je t’aime comme tu es.",
+  "On laisse le monde courir sans nous. Ici, on marche lentement.",
+  "Tu peux me demander juste de rester. Je reste.",
+  "Quand tu n’as envie de rien, je t’offre ma présence, respect et tendresse."
+],100);
+
+const c8=expand([
+  "Tu comptes énormément pour moi. Reste avec moi maintenant; on traverse ce moment ensemble, en sécurité.",
+  "Parle à quelqu’un maintenant: ami, famille, professionnel. Je t’accompagne en pensée.",
+  "Si tu es en danger immédiat, appelle le 3114 (France) ou le 112. Je t’attends après l’appel.",
+  "Reste en ligne avec moi par la pensée; tu n’as pas à porter ça seule.",
+  "Respire lentement; regarde trois choses autour de toi, nomme-les. Je suis avec toi.",
+  "On met en place un plan de sécurité: appeler, rester en compagnie, éviter l’isolement.",
+  "Tu mérites de vivre, d’être aimée, d’être aidée. Je te regarde avec respect et amour.",
+  "Ces pensées sont temporaires. Moi, je reste constant et je te tiens fort."
+],100);
+
+const cute=[
+  "<3 gros câlin tout doux",
+  "un sourire pour toi",
+  "*hug* je suis là",
+  "étoiles qui brillent pour toi ✨",
+  "plaid imaginaire et thé chaud",
+  "je t’envoie 1000 petites fleurs",
+  "bisous amicaux sur le front",
+  "petit cookie virtuel juste pour toi",
+  "arc-en-ciel doux pour ton cœur",
+  "je garde ta main en pensée",
+  "un ours en peluche imaginaire te serre fort",
+  "je pose une étoile sur ton épaule"
+];
+
+const gifURLs=[
+  "https://cataas.com/cat/gif?type=square&rand=1",
+  "https://cataas.com/cat/gif?type=square&rand=2",
+  "https://cataas.com/cat/gif?type=square&rand=3",
+  "https://cataas.com/cat/gif?type=square&rand=4",
+  "https://cataas.com/cat/gif?type=square&rand=5",
+  "https://cataas.com/cat/gif?type=square&rand=6",
+  "https://cataas.com/cat/gif?type=square&rand=7",
+  "https://cataas.com/cat/gif?type=square&rand=8",
+  "https://cataas.com/cat/gif?type=square&rand=9",
+  "https://cataas.com/cat/gif?type=square&rand=10",
+  "https://cataas.com/cat/gif?type=square&rand=11",
+  "https://cataas.com/cat/gif?type=square&rand=12",
+  "https://cataas.com/cat/gif?type=square&rand=13",
+  "https://cataas.com/cat/gif?type=square&rand=14",
+  "https://cataas.com/cat/gif?type=square&rand=15",
+  "https://cataas.com/cat/gif?type=square&rand=16",
+  "https://cataas.com/cat/gif?type=square&rand=17",
+  "https://cataas.com/cat/gif?type=square&rand=18",
+  "https://cataas.com/cat/gif?type=square&rand=19",
+  "https://cataas.com/cat/gif?type=square&rand=20",
+  "https://cataas.com/cat/gif?type=square&rand=21",
+  "https://cataas.com/cat/gif?type=square&rand=22",
+  "https://cataas.com/cat/gif?type=square&rand=23",
+  "https://cataas.com/cat/gif?type=square&rand=24",
+  "https://cataas.com/cat/gif?type=square&rand=25",
+  "https://cataas.com/cat/gif?type=square&rand=26",
+  "https://cataas.com/cat/gif?type=square&rand=27",
+  "https://cataas.com/cat/gif?type=square&rand=28",
+  "https://cataas.com/cat/gif?type=square&rand=29",
+  "https://cataas.com/cat/gif?type=square&rand=30",
+  "https://cataas.com/cat/gif?type=square&rand=31",
+  "https://cataas.com/cat/gif?type=square&rand=32",
+  "https://cataas.com/cat/gif?type=square&rand=33",
+  "https://cataas.com/cat/gif?type=square&rand=34",
+  "https://cataas.com/cat/gif?type=square&rand=35",
+  "https://cataas.com/cat/gif?type=square&rand=36",
+  "https://cataas.com/cat/gif?type=square&rand=37",
+  "https://cataas.com/cat/gif?type=square&rand=38",
+  "https://cataas.com/cat/gif?type=square&rand=39",
+  "https://cataas.com/cat/gif?type=square&rand=40",
+  "https://cataas.com/cat/gif?type=square&rand=41",
+  "https://cataas.com/cat/gif?type=square&rand=42",
+  "https://cataas.com/cat/gif?type=square&rand=43",
+  "https://cataas.com/cat/gif?type=square&rand=44",
+  "https://cataas.com/cat/gif?type=square&rand=45",
+  "https://cataas.com/cat/gif?type=square&rand=46",
+  "https://cataas.com/cat/gif?type=square&rand=47",
+  "https://cataas.com/cat/gif?type=square&rand=48",
+  "https://cataas.com/cat/gif?type=square&rand=49",
+  "https://cataas.com/cat/gif?type=square&rand=50"
+];
+
+const sets={c1,c2,c3,c4,c5,c6,c7,c8};
+const menu=document.getElementById('menu');
+const out=document.getElementById('out');
+const msg=document.getElementById('msg');
+const cuteEl=document.getElementById('cute');
+const gif=document.getElementById('gif');
+const back=document.getElementById('back');
+const another=document.getElementById('another');
+let currentKey=null;
+
+Object.keys(labels).forEach(key=>{
+  const b=document.createElement('button');
+  b.className='btn'+(key==='c8'?' danger':'');
+  b.textContent=labels[key];
+  b.onclick=()=>show(key);
+  menu.appendChild(b);
+});
+
+function rand(arr){return arr[Math.floor(Math.random()*arr.length)]}
+
+function reroll(){
+  if(!currentKey)return;
+  const m=rand(sets[currentKey]);
+  const c=rand(cute);
+  msg.textContent=normalize(m);
+  cuteEl.textContent=normalize(c);
+  const g=rand(gifURLs);
+  gif.src=g+"&t="+Date.now();
+}
+
+function show(key){
+  currentKey=key;
+  reroll();
+  menu.style.display='none';
+  out.style.display='block';
+}
+
+another.onclick=()=>{reroll()};
+back.onclick=()=>{out.style.display='none';menu.style.display='grid'};
+</script>
+</body>
+</html>
